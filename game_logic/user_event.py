@@ -5,6 +5,9 @@ class UserEvent(object):
         self.is_left_mouse_click = False
         self.focus_element = None
 
+        self.is_enter_pressed = False
+
+        self.was_enter_pressed_last_update = False
         self.is_right_mouse_was_clicked_last_update = False
         self.is_left_mouse_was_clicked_last_update = False
 
@@ -27,5 +30,5 @@ class Rectangle(object):
         self.size = size
 
     def contain(self, point: Point):
-        return self.location.x <= point.x <= self.size.width \
-               and self.location.y <= point.y <= self.size.height
+        return self.location.x <= point.x <= self.size.width + self.location.x \
+               and self.location.y <= point.y <= self.size.height + self.location.y

@@ -12,7 +12,6 @@ class Window(object):
         self.display = pygame.display.set_mode((size.width, size.height))
         self.game = game
 
-        # self.display.update()
         pygame.display.set_caption("Test name")
 
     def Run(self):
@@ -26,9 +25,14 @@ class Window(object):
                 if e.type == pygame.QUIT:
                     is_closed = True
 
+                if e.type == pygame.KEYDOWN:
+                    user_event.was_enter_pressed_last_update = user_event.is_enter_pressed
+                    user_event.is_enter_pressed = pygame.key.get_pressed()[pygame.K_SPACE]
+
                 if e.type == pygame.MOUSEBUTTONDOWN:
+
                     for c in self.game.user_controls:
-                        if c.collision.contain(Point(e.pos[0], e.pos[1])):
+                        if c.enable and c.collision.contain(Point(e.pos[0], e.pos[1])):
                             user_event.focus_element = c
                             user_event.relatively_mouse_location = Point(e.pos[0] - c.collision.location.x,
                                                                          e.pos[1] - c.collision.location.y)
@@ -43,16 +47,17 @@ class Window(object):
             controls = self.game.update(user_event)
 
             # отрисовка
-            for control in controls:
-                if True:
-                    self.draw_map(control, Point(0, 0))
+            if controls is not None:
+                for control in controls:
+                    if True:
+                        self.draw_map(control, Point(control.wx, control.wy), control.is_user_mode)
 
             pygame.display.update()
 
     def draw_rectangle(self, rectangle, color):
         pygame.draw.rect(self.display, color, rectangle)
 
-    def draw_map(self, map: FieldControl, position: Point):
+    def draw_map(self, map: FieldControl, position: Point, is_player_mode: bool):
         for x in range(map.map.width):
             for y in range(map.map.height):
                 cell = map.map.cells[x][y]
@@ -72,11 +77,16 @@ class Window(object):
                         (0, 255, 0)
                     )
                 if cell == TestCell.SHIP_PEACE:
+                    color = (0, 0, 0)
+                    if is_player_mode:
+                        color = (0, 0, 255)
+                    else:
+                        color = (255, 255, 255)
                     self.draw_rectangle(
                         [position.x + x * map.cell_width,
                          position.y + y * map.cell_height,
                          map.cell_width, map.cell_height],
-                        (0, 0, 255)
+                        color
                     )
                 if cell == TestCell.DEAD_SHIP_PEACE:
                     self.draw_rectangle(
@@ -85,5 +95,6 @@ class Window(object):
                          map.cell_width, map.cell_height],
                         (255, 0, 0)
                     )
+
 
 
