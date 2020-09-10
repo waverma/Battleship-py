@@ -11,14 +11,17 @@ class TestMap(object):
         self.ship_peace_count = 0
         self.ship_peace_count_limit = 20
 
-        self.one_limit = 4
-        self.two_limit = 3
-        self.tree_limit = 2
-        self.four_limit = 1
-        self.one_current = 0
-        self.two_current = 0
-        self.tree_current = 0
-        self.four_current = 0
+        self.ship_count_limit = dict()
+        self.ship_count = dict()
+        self.ship_count[ShipType.FOUR_DECK] = 0
+        self.ship_count[ShipType.THREE_DECK] = 0
+        self.ship_count[ShipType.TWO_DECK] = 0
+        self.ship_count[ShipType.SINGLE_DECK] = 0
+
+        self.ship_count_limit[ShipType.FOUR_DECK] = 1
+        self.ship_count_limit[ShipType.THREE_DECK] = 2
+        self.ship_count_limit[ShipType.TWO_DECK] = 3
+        self.ship_count_limit[ShipType.SINGLE_DECK] = 4
 
         for x in range(width):
             self.cells.append([])
@@ -32,6 +35,20 @@ class TestMap(object):
         if self.ship_peace_count == self.ship_peace_count_limit:
             return False
         if self.cells[x][y] == TestCell.EMPTY:
+
+            ship_type = self.get_new_ship_type(x, y)
+            if ship_type == ShipType.INCORRECT_SHIP:
+                return False
+            if self.ship_count[ship_type] == self.ship_count_limit[ship_type]:
+                return False
+            self.ship_count[ship_type] += 1
+            if ship_type == ShipType.TWO_DECK:
+                self.ship_count[ShipType.SINGLE_DECK] -= 1
+            if ship_type == ShipType.THREE_DECK:
+                self.ship_count[ShipType.TWO_DECK] -= 1
+            if ship_type == ShipType.FOUR_DECK:
+                self.ship_count[ShipType.THREE_DECK] -= 1
+
             self.cells[x][y] = TestCell.SHIP_PEACE
             self.ship_peace_count += 1
             return True
@@ -60,6 +77,78 @@ class TestMap(object):
             self.cells[x][y] = TestCell.DEAD_SHIP_PEACE
             self.ship_peace_count -= 1
 
+    def get_new_ship_type(self, x, y):
+        # check to diagonal
+        if (x > 0 and y > 0 and self.cells[x-1][y-1] == TestCell.SHIP_PEACE) or \
+                (x > 0 and y < self.height - 1 and self.cells[x-1][y+1] == TestCell.SHIP_PEACE) or \
+                (x < self.width - 1 and y > 0 and self.cells[x+1][y-1] == TestCell.SHIP_PEACE) or \
+                (x < self.width and y < self.height and self.cells[x+1][y+1] == TestCell.SHIP_PEACE):
+            return ShipType.INCORRECT_SHIP
+
+        # check to single-deck
+        if (x > 0 and self.cells[x - 1][y] == TestCell.EMPTY) and \
+                (y > 0 and self.cells[x][y - 1] == TestCell.EMPTY) and \
+                (x < self.width - 1 and self.cells[x + 1][y] == TestCell.EMPTY) and \
+                (y < self.height - 1 and self.cells[x][y + 1] == TestCell.EMPTY):
+            return ShipType.SINGLE_DECK
+
+        # check to horizontal
+        current_ship_peace_count = 1
+        if (x > 0 and self.cells[x - 1][y] != TestCell.EMPTY) or \
+                (x < self.width - 1 and self.cells[x + 1][y] != TestCell.EMPTY):
+            cx = x-1
+            while cx > 0:
+                if self.cells[cx][y] == TestCell.SHIP_PEACE:
+                    current_ship_peace_count += 1
+                else:
+                    break
+                cx -= 1
+
+            cx = x+1
+            while cx > 0:
+                if self.cells[cx][y] == TestCell.SHIP_PEACE:
+                    current_ship_peace_count += 1
+                else:
+                    break
+                cx += 1
+
+            if current_ship_peace_count == 2:
+                return ShipType.TWO_DECK
+            if current_ship_peace_count == 3:
+                return ShipType.THREE_DECK
+            if current_ship_peace_count == 4:
+                return ShipType.FOUR_DECK
+            if current_ship_peace_count > 4:
+                return ShipType.INCORRECT_SHIP
+
+        # check to vertical
+        if (y > 0 and self.cells[x][y-1] != TestCell.EMPTY) or \
+                (y < self.height - 1 and self.cells[x][y+1] != TestCell.EMPTY):
+            cy = y - 1
+            while cy > 0:
+                if self.cells[x][cy] == TestCell.SHIP_PEACE:
+                    current_ship_peace_count += 1
+                else:
+                    break
+                cy -= 1
+
+            cy = y + 1
+            while cy > 0:
+                if self.cells[x][cy] == TestCell.SHIP_PEACE:
+                    current_ship_peace_count += 1
+                else:
+                    break
+                cy += 1
+
+            if current_ship_peace_count == 2:
+                return ShipType.TWO_DECK
+            if current_ship_peace_count == 3:
+                return ShipType.THREE_DECK
+            if current_ship_peace_count == 4:
+                return ShipType.FOUR_DECK
+            if current_ship_peace_count > 4:
+                return ShipType.INCORRECT_SHIP
+
     @staticmethod
     def get_random_map(map=None):
         result = TestMap()
@@ -76,3 +165,11 @@ class TestCell(Enum):
     SHIP_PEACE = 1,
     DEAD_SHIP_PEACE = 2,
     SHOT = 3
+
+
+class ShipType(Enum):
+    INCORRECT_SHIP = 0
+    SINGLE_DECK = 1
+    TWO_DECK = 2
+    THREE_DECK = 3
+    FOUR_DECK = 4
