@@ -29,6 +29,18 @@ class Window(object):
                     user_event.was_enter_pressed_last_update = user_event.is_enter_pressed
                     user_event.is_enter_pressed = pygame.key.get_pressed()[pygame.K_SPACE]
 
+                    user_event.was_1_pressed_last_update = user_event.is_1_pressed
+                    user_event.is_1_pressed = pygame.key.get_pressed()[pygame.K_1]
+
+                    user_event.was_2_pressed_last_update = user_event.is_2_pressed
+                    user_event.is_2_pressed = pygame.key.get_pressed()[pygame.K_2]
+
+                    user_event.was_3_pressed_last_update = user_event.is_3_pressed
+                    user_event.is_3_pressed = pygame.key.get_pressed()[pygame.K_3]
+
+                    user_event.was_4_pressed_last_update = user_event.is_4_pressed
+                    user_event.is_4_pressed = pygame.key.get_pressed()[pygame.K_4]
+
                 if e.type == pygame.MOUSEBUTTONDOWN:
 
                     for c in self.game.user_controls:
@@ -47,6 +59,8 @@ class Window(object):
             controls = self.game.update(user_event)
 
             # отрисовка
+            print(self.game.current_ship_type)
+
             if controls is not None:
                 for control in controls:
                     if True:
@@ -94,6 +108,13 @@ class Window(object):
                          position.y + y * map.cell_height,
                          map.cell_width, map.cell_height],
                         (255, 0, 0)
+                    )
+                if cell == TestCell.POSSIBLE_SHIP_PLACE:
+                    self.draw_rectangle(
+                        [position.x + x * map.cell_width,
+                         position.y + y * map.cell_height,
+                         map.cell_width, map.cell_height],
+                        (255, 255, 0)
                     )
 
 

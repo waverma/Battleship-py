@@ -6,8 +6,16 @@ class UserEvent(object):
         self.focus_element = None
 
         self.is_enter_pressed = False
+        self.is_1_pressed = False
+        self.is_2_pressed = False
+        self.is_3_pressed = False
+        self.is_4_pressed = False
 
         self.was_enter_pressed_last_update = False
+        self.was_1_pressed_last_update = False
+        self.was_2_pressed_last_update = False
+        self.was_3_pressed_last_update = False
+        self.was_4_pressed_last_update = False
         self.is_right_mouse_was_clicked_last_update = False
         self.is_left_mouse_was_clicked_last_update = False
 

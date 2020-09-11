@@ -1,7 +1,7 @@
 from enum import Enum
 import random
 
-from game_logic.test_map import TestMap, TestCell
+from game_logic.test_map import TestMap, TestCell, ShipType
 from game_logic.user_control import FieldControl
 from game_logic.user_event import UserEvent, Point
 
@@ -27,10 +27,37 @@ class Game(object):
         self.user_controls.append(self.player_field_control)
         self.user_controls.append(self.bot_field_control)
 
+        # for pre game
+        self.current_ship_type = ShipType.SINGLE_DECK
+
+        self.ship_count_limit = dict()
+        self.ship_count = dict()
+        self.ship_count[ShipType.FOUR_DECK] = 0
+        self.ship_count[ShipType.THREE_DECK] = 0
+        self.ship_count[ShipType.TWO_DECK] = 0
+        self.ship_count[ShipType.SINGLE_DECK] = 0
+
+        self.ship_count_limit[ShipType.FOUR_DECK] = 1
+        self.ship_count_limit[ShipType.THREE_DECK] = 2
+        self.ship_count_limit[ShipType.TWO_DECK] = 3
+        self.ship_count_limit[ShipType.SINGLE_DECK] = 4
+
     def update(self, e: UserEvent) -> ():
         result = list()
 
         if self.state == GameState.PRE_GAME:
+
+            # TODO запретить менять вид корабля в овремя строительства!!!
+
+            if e.is_1_pressed and not e.was_1_pressed_last_update:
+                self.current_ship_type = ShipType.SINGLE_DECK
+            if e.is_2_pressed and not e.was_2_pressed_last_update:
+                self.current_ship_type = ShipType.TWO_DECK
+            if e.is_3_pressed and not e.was_3_pressed_last_update:
+                self.current_ship_type = ShipType.THREE_DECK
+            if e.is_4_pressed and not e.was_4_pressed_last_update:
+                self.current_ship_type = ShipType.FOUR_DECK
+
             self.bot_field_control.enable = False
             self.player_field_control.enable = True
 
@@ -39,14 +66,18 @@ class Game(object):
                 return
 
             if e.focus_element is self.player_field_control:
+
                 cell_point = Point(
                     e.relatively_mouse_location.x // e.focus_element.cell_width,
                     e.relatively_mouse_location.y // e.focus_element.cell_height
                 )
                 if e.is_left_mouse_click and not e.is_left_mouse_was_clicked_last_update:
-                    self.player_field.try_set_new_peace_of_ship(cell_point)
+                    if self.ship_count[self.current_ship_type] != self.ship_count_limit[self.current_ship_type] and self.player_field.try_set_new_peace_of_ship(cell_point, self.current_ship_type):
+                        self.ship_count[self.current_ship_type] += 1
                 elif e.is_right_mouse_click and not e.is_right_mouse_was_clicked_last_update:
-                    self.player_field.try_remove_new_peace_of_ship(cell_point)
+                    r = self.player_field.try_remove_new_peace_of_ship(cell_point)
+                    if r[0]:
+                        self.ship_count[r[1]] -= 1
 
             result.append(self.player_field_control)
             return result
