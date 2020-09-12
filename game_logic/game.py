@@ -1,16 +1,16 @@
 from enum import Enum
 import random
 
-from game_logic.test_map import TestMap, TestCell, ShipType
-from game_logic.user_control import FieldControl
+from game_logic.controls.field_control import FieldControl
+from game_logic.map import Map, Cell, ShipType
 from game_logic.user_event import UserEvent, Point
 
 
 class Game(object):
     def __init__(self):
         self.state = GameState.PRE_GAME
-        self.player_field = TestMap()
-        self.bot_field = TestMap()
+        self.player_field = Map()
+        self.bot_field = Map()
         self.user_controls = []
 
         # добавление всех контролов
@@ -120,7 +120,7 @@ class Game(object):
 
     def end(self, is_player_win: bool):
         self.user_controls = []
-        end_image = TestMap(1, 1)
+        end_image = Map(1, 1)
 
         if not is_player_win:
             end_image.try_set_new_peace_of_ship(Point(0, 0))
@@ -135,7 +135,7 @@ class Game(object):
 
         for cells in self.player_field.cells:
             for x in cells:
-                result = result or x == TestCell.SHIP_PEACE
+                result = result or x == Cell.SHIP_PEACE
 
         if not result:
             return True, False
@@ -143,7 +143,7 @@ class Game(object):
         result = False
         for cells in self.bot_field.cells:
             for x in cells:
-                result = result or x == TestCell.SHIP_PEACE
+                result = result or x == Cell.SHIP_PEACE
 
         if not result:
             return True, True
@@ -155,7 +155,7 @@ class Game(object):
         self.user_controls.append(self.player_field_control)
         self.user_controls.append(self.bot_field_control)
 
-        self.bot_field = TestMap.get_random_map(self.player_field)
+        self.bot_field = Map.get_random_map(self.player_field)
         self.bot_field_control.map = self.bot_field
 
         self.state = GameState.GAME

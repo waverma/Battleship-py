@@ -1,4 +1,6 @@
-from game_logic.user_event import Rectangle, Point, Size
+from game_logic.point import Point
+from game_logic.rectangle import Rectangle
+from game_logic.size import Size
 
 
 class UserControl(object):
@@ -9,31 +11,5 @@ class UserControl(object):
 
         self.collision = Rectangle(Point(x, y), Size(width, height))
 
-    def on_left_click(self):
+    def draw(self, display):
         pass
-
-    def on_right_click(self):
-        pass
-
-    def get_draw_set(self) -> list:
-        pass
-
-
-class FieldControl(UserControl):
-    def __init__(self, x: int, y: int, width: int, height: int, cell_width: int, cell_height: int):
-        super().__init__(x, y, width*cell_width, height*cell_height)
-
-        self.is_user_mode = True
-        self.cell_width = cell_width
-        self.cell_height = cell_height
-
-        self.map = None
-
-    # def get_draw_set(self) -> list:
-    #     super(FieldControl, self).get_draw_set()
-    #     if map is None:
-    #         return None
-    #
-    #     result = []
-    #     result
-

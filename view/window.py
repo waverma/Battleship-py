@@ -1,9 +1,9 @@
 import pygame
 
 from game_logic.game import Game
-from game_logic.test_map import TestMap, TestCell
-from game_logic.user_control import FieldControl
-from game_logic.user_event import Size, Point, UserEvent
+from game_logic.point import Point
+from game_logic.size import Size
+from game_logic.user_event import UserEvent
 
 
 class Window(object):
@@ -63,59 +63,6 @@ class Window(object):
 
             if controls is not None:
                 for control in controls:
-                    if True:
-                        self.draw_map(control, Point(control.wx, control.wy), control.is_user_mode)
+                    control.draw_map(self.display)
 
             pygame.display.update()
-
-    def draw_rectangle(self, rectangle, color):
-        pygame.draw.rect(self.display, color, rectangle)
-
-    def draw_map(self, map: FieldControl, position: Point, is_player_mode: bool):
-        for x in range(map.map.width):
-            for y in range(map.map.height):
-                cell = map.map.cells[x][y]
-
-                if cell == TestCell.EMPTY:
-                    self.draw_rectangle(
-                        [position.x + x * map.cell_width,
-                         position.y + y * map.cell_height,
-                         map.cell_width, map.cell_height],
-                        (255, 255, 255)
-                    )
-                if cell == TestCell.SHOT:
-                    self.draw_rectangle(
-                        [position.x + x * map.cell_width,
-                         position.y + y * map.cell_height,
-                         map.cell_width, map.cell_height],
-                        (0, 255, 0)
-                    )
-                if cell == TestCell.SHIP_PEACE:
-                    color = (0, 0, 0)
-                    if is_player_mode:
-                        color = (0, 0, 255)
-                    else:
-                        color = (255, 255, 255)
-                    self.draw_rectangle(
-                        [position.x + x * map.cell_width,
-                         position.y + y * map.cell_height,
-                         map.cell_width, map.cell_height],
-                        color
-                    )
-                if cell == TestCell.DEAD_SHIP_PEACE:
-                    self.draw_rectangle(
-                        [position.x + x * map.cell_width,
-                         position.y + y * map.cell_height,
-                         map.cell_width, map.cell_height],
-                        (255, 0, 0)
-                    )
-                if cell == TestCell.POSSIBLE_SHIP_PLACE:
-                    self.draw_rectangle(
-                        [position.x + x * map.cell_width,
-                         position.y + y * map.cell_height,
-                         map.cell_width, map.cell_height],
-                        (255, 255, 0)
-                    )
-
-
-
