@@ -1,15 +1,18 @@
-from game_logic.point import Point
-from game_logic.rectangle import Rectangle
-from game_logic.size import Size
-
-
 class UserControl(object):
     def __init__(self, x: int, y: int, width: int, height: int):
         self.enable = False
-        self.wx = 0
-        self.wy = 0
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
-        self.collision = Rectangle(Point(x, y), Size(width, height))
+        self.game = None
+
+    def on_left_mouse(self, e):
+        pass
+
+    def on_right_mouse(self, e):
+        pass
 
     def draw(self, display):
         pass

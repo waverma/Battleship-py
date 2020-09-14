@@ -1,26 +1,62 @@
 from enum import Enum
-import random
 
+from game_logic.ai import AI
+from game_logic.controls.button import Button
 from game_logic.controls.field_control import FieldControl
+from game_logic.controls.text_control import TextControl
 from game_logic.map import Map, Cell, ShipType
 from game_logic.user_event import UserEvent, Point
 
 
 class Game(object):
+
+    cell_size = 35
+
     def __init__(self):
         self.state = GameState.PRE_GAME
         self.player_field = Map()
-        self.bot_field = Map()
+        self.bot_field = AI.generate_random_map()
+        self.bot_field.is_battle_mode = True
         self.user_controls = []
 
         # добавление всех контролов
-        self.player_field_control = FieldControl(0, 0, 10, 10, 35, 35)
+        self.player_field_control = FieldControl(self.cell_size, self.cell_size * 3, 10, 10, self.cell_size, self.cell_size)
         self.player_field_control.map = self.player_field
-        self.bot_field_control = FieldControl(400, 400, 10, 10, 35, 35)
+        self.player_field_control.game = self
+        self.bot_field_control = FieldControl(self.cell_size * 16, self.cell_size * 3, 10, 10, self.cell_size, self.cell_size)
+        self.bot_field_control.colors[Cell.SHIP_PEACE] = (255, 255, 255)
+        self.bot_field_control.colors[Cell.POSSIBLE_SHIP_PLACE] = (255, 255, 255)
         self.bot_field_control.map = self.bot_field
-        self.bot_field_control.wx = 400
-        self.bot_field_control.wy = 400
+        self.bot_field_control.game = self
         self.bot_field_control.is_user_mode = False
+
+        self.player_field_text_control = TextControl(self.cell_size, self.cell_size * 2, self.cell_size * 10, self.cell_size)
+        self.player_field_text_control.text = 'подготовка озера'
+        self.bot_field_text_control = TextControl(self.cell_size * 16, self.cell_size * 2, self.cell_size * 10, self.cell_size)
+        self.bot_field_text_control.text = 'не мое озеро'
+
+        self.labels = dict()
+        self.labels[ShipType.SINGLE_DECK] = (
+            TextControl(self.cell_size * 18, self.cell_size * 2, self.cell_size * 6, self.cell_size),
+            TextControl(self.cell_size * 25, self.cell_size * 2, self.cell_size, self.cell_size)
+        )
+        self.labels[ShipType.TWO_DECK] = (
+            TextControl(self.cell_size * 18, self.cell_size * 4, self.cell_size * 6, self.cell_size),
+            TextControl(self.cell_size * 25, self.cell_size * 4, self.cell_size, self.cell_size)
+        )
+        self.labels[ShipType.THREE_DECK] = (
+            TextControl(self.cell_size * 18, self.cell_size * 6, self.cell_size * 6, self.cell_size),
+            TextControl(self.cell_size * 25, self.cell_size * 6, self.cell_size, self.cell_size)
+        )
+        self.labels[ShipType.FOUR_DECK] = (
+            TextControl(self.cell_size * 18, self.cell_size * 8, self.cell_size * 6, self.cell_size),
+            TextControl(self.cell_size * 25, self.cell_size * 8, self.cell_size, self.cell_size)
+        )
+
+        self.start_button = Button(self.cell_size * 18, self.cell_size * 11, self.cell_size * 8, self.cell_size * 2)
+        self.start_button.text = "В БОЙ"
+        self.start_button.commands.append(lambda: self.begin())
+        self.user_controls.append(self.start_button)
 
         self.post_map = FieldControl(0, 0, 1, 1, 1000, 1000)
 
@@ -42,44 +78,53 @@ class Game(object):
         self.ship_count_limit[ShipType.TWO_DECK] = 3
         self.ship_count_limit[ShipType.SINGLE_DECK] = 4
 
+        self.labels[ShipType.SINGLE_DECK][0].text = "одна палуба"
+        self.labels[ShipType.TWO_DECK][0].text = "две палубы"
+        self.labels[ShipType.THREE_DECK][0].text = "три палубы"
+        self.labels[ShipType.FOUR_DECK][0].text = "четыре палубы"
+
     def update(self, e: UserEvent) -> ():
+
         result = list()
+
+        if e.focus_element is not None and e.is_left_mouse_click and not e.is_left_mouse_was_clicked_last_update:
+            e.focus_element.on_left_mouse(e)
+        elif e.focus_element is not None and e.is_right_mouse_click and not e.is_right_mouse_was_clicked_last_update:
+            e.focus_element.on_right_mouse(e)
+
+        self.labels[ShipType.SINGLE_DECK][1].text = str(self.ship_count_limit[ShipType.SINGLE_DECK] - self.ship_count[ShipType.SINGLE_DECK])
+        self.labels[ShipType.TWO_DECK][1].text = str(self.ship_count_limit[ShipType.TWO_DECK] - self.ship_count[ShipType.TWO_DECK])
+        self.labels[ShipType.THREE_DECK][1].text = str(self.ship_count_limit[ShipType.THREE_DECK] - self.ship_count[ShipType.THREE_DECK])
+        self.labels[ShipType.FOUR_DECK][1].text = str(self.ship_count_limit[ShipType.FOUR_DECK] - self.ship_count[ShipType.FOUR_DECK])
 
         if self.state == GameState.PRE_GAME:
 
-            # TODO запретить менять вид корабля в овремя строительства!!!
-
-            if e.is_1_pressed and not e.was_1_pressed_last_update:
-                self.current_ship_type = ShipType.SINGLE_DECK
-            if e.is_2_pressed and not e.was_2_pressed_last_update:
-                self.current_ship_type = ShipType.TWO_DECK
-            if e.is_3_pressed and not e.was_3_pressed_last_update:
-                self.current_ship_type = ShipType.THREE_DECK
-            if e.is_4_pressed and not e.was_4_pressed_last_update:
-                self.current_ship_type = ShipType.FOUR_DECK
+            if not self.player_field.is_ship_building:
+                self.labels[self.current_ship_type][0].back_color = (255, 0, 0)
+                if e.is_1_pressed and not e.was_1_pressed_last_update:
+                    self.current_ship_type = ShipType.SINGLE_DECK
+                if e.is_2_pressed and not e.was_2_pressed_last_update:
+                    self.current_ship_type = ShipType.TWO_DECK
+                if e.is_3_pressed and not e.was_3_pressed_last_update:
+                    self.current_ship_type = ShipType.THREE_DECK
+                if e.is_4_pressed and not e.was_4_pressed_last_update:
+                    self.current_ship_type = ShipType.FOUR_DECK
+                self.labels[self.current_ship_type][0].back_color = (0, 255, 0)
 
             self.bot_field_control.enable = False
             self.player_field_control.enable = True
+            self.start_button.enable = True
 
-            if e.is_enter_pressed and not e.was_enter_pressed_last_update:
-                self.begin()
-                return
-
-            if e.focus_element is self.player_field_control:
-
-                cell_point = Point(
-                    e.relatively_mouse_location.x // e.focus_element.cell_width,
-                    e.relatively_mouse_location.y // e.focus_element.cell_height
-                )
-                if e.is_left_mouse_click and not e.is_left_mouse_was_clicked_last_update:
-                    if self.ship_count[self.current_ship_type] != self.ship_count_limit[self.current_ship_type] and self.player_field.try_set_new_peace_of_ship(cell_point, self.current_ship_type):
-                        self.ship_count[self.current_ship_type] += 1
-                elif e.is_right_mouse_click and not e.is_right_mouse_was_clicked_last_update:
-                    r = self.player_field.try_remove_new_peace_of_ship(cell_point)
-                    if r[0]:
-                        self.ship_count[r[1]] -= 1
+            # if e.is_enter_pressed and not e.was_enter_pressed_last_update:
+            #     self.begin()
 
             result.append(self.player_field_control)
+            result.append(self.player_field_text_control)
+            for c in self.labels:
+                result.append(self.labels[c][0])
+                result.append(self.labels[c][1])
+            result.append(self.start_button)
+
             return result
 
         elif self.state == GameState.GAME:
@@ -90,26 +135,18 @@ class Game(object):
 
             self.bot_field_control.enable = True
             self.player_field_control.enable = True
-
-            if e.focus_element is self.bot_field_control:
-                cell_point = Point(
-                    e.relatively_mouse_location.x // e.focus_element.cell_width,
-                    e.relatively_mouse_location.y // e.focus_element.cell_height
-                )
-                if e.is_left_mouse_click and not e.is_left_mouse_was_clicked_last_update:
-                    self.bot_field.strike(cell_point)
-                    self.player_field.strike(Point(
-                        random.randint(0, self.player_field.width - 1),
-                        random.randint(0, self.player_field.height - 1)
-                    ))
+            self.start_button.enable = False
 
             result.append(self.player_field_control)
             result.append(self.bot_field_control)
+            result.append(self.player_field_text_control)
+            result.append(self.bot_field_text_control)
             return result
         elif self.state == GameState.POST_GAME:
             result.append(self.post_map)
             self.bot_field_control.enable = False
             self.player_field_control.enable = False
+            self.start_button.enable = False
             return result
 
     def prepare_to_begin(self):
@@ -123,7 +160,7 @@ class Game(object):
         end_image = Map(1, 1)
 
         if not is_player_win:
-            end_image.try_set_new_peace_of_ship(Point(0, 0))
+            end_image.try_set_new_peace_of_ship(Point(0, 0), ShipType.SINGLE_DECK)
         end_image.strike(Point(0, 0))
         self.post_map.map = end_image
         self.user_controls.append(self.post_map)
@@ -155,8 +192,20 @@ class Game(object):
         self.user_controls.append(self.player_field_control)
         self.user_controls.append(self.bot_field_control)
 
-        self.bot_field = Map.get_random_map(self.player_field)
-        self.bot_field_control.map = self.bot_field
+        self.player_field.is_battle_mode = True
+
+        for x in range(self.player_field.width):
+            for y in range(self.player_field.height):
+                if self.player_field.cells[x][y] == Cell.POSSIBLE_SHIP_PLACE:
+                    self.player_field.cells[x][y] = Cell.EMPTY
+                if self.bot_field.cells[x][y] == Cell.POSSIBLE_SHIP_PLACE:
+                    self.bot_field.cells[x][y] = Cell.EMPTY
+
+        self.player_field_text_control.text = "мое озеро"
+        for c in self.labels:
+            self.labels[c][0].enable = False
+            self.labels[c][1].enable = False
+        self.start_button.enable = False
 
         self.state = GameState.GAME
 

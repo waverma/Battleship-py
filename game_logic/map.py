@@ -1,3 +1,4 @@
+
 from game_logic.enums.cell import Cell
 from game_logic.enums.ship_type import ShipType
 from game_logic.point import Point
@@ -10,6 +11,9 @@ class Map(object):
         self.cells = []
         self.ship_peace_count = 0
         self.ship_peace_count_limit = 20
+
+        self.is_battle_mode = False
+        self.is_ship_building = False
 
         for x in range(width):
             self.cells.append([])
@@ -44,6 +48,7 @@ class Map(object):
         return False
 
     def redistribute_possible_ship_places(self, start, end):
+        self.is_ship_building = True
         for x in range(self.width):
             for y in range(self.height):
                 if self.cells[x][y] == Cell.POSSIBLE_SHIP_PLACE:
@@ -57,19 +62,24 @@ class Map(object):
                     incorrect_ship.append(Point(x, y))
 
         if len(incorrect_ship) == 0:
+            self.is_ship_building = False
             for x in range(self.width):
                 for y in range(self.height):
                     if not self.is_diagonal_neighbour(x, y) and not self.is_not_diagonal_neighbour(x, y) and self.cells[x][y] != Cell.SHIP_PEACE:
                         self.set_possible_cell(x, y)
         if len(incorrect_ship) == 1:
 
-            if not self.is_diagonal_neighbour(incorrect_ship[0].x + 1, incorrect_ship[0].y):
+            if not self.is_not_diagonal_neighbour(incorrect_ship[0].x + 1, incorrect_ship[0].y) and \
+                    not self.is_diagonal_neighbour(incorrect_ship[0].x + 1, incorrect_ship[0].y):
                 self.set_possible_cell(incorrect_ship[0].x + 1, incorrect_ship[0].y)
-            if not self.is_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y + 1):
+            if not self.is_not_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y + 1) and \
+                    not self.is_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y + 1):
                 self.set_possible_cell(incorrect_ship[0].x, incorrect_ship[0].y + 1)
-            if not self.is_diagonal_neighbour(incorrect_ship[0].x - 1, incorrect_ship[0].y):
+            if not self.is_not_diagonal_neighbour(incorrect_ship[0].x - 1, incorrect_ship[0].y) and \
+                    not self.is_diagonal_neighbour(incorrect_ship[0].x - 1, incorrect_ship[0].y):
                 self.set_possible_cell(incorrect_ship[0].x - 1, incorrect_ship[0].y)
-            if not self.is_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y - 1):
+            if not self.is_not_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y - 1) and \
+                    not self.is_diagonal_neighbour(incorrect_ship[0].x, incorrect_ship[0].y - 1):
                 self.set_possible_cell(incorrect_ship[0].x, incorrect_ship[0].y - 1)
 
         if len(incorrect_ship) == 2 or len(incorrect_ship) == 3:
@@ -77,12 +87,6 @@ class Map(object):
                 self.set_possible_cell(start.x, start.y)
             if not self.is_not_diagonal_neighbour(end.x, end.y) and not self.is_diagonal_neighbour(end.x, end.y):
                 self.set_possible_cell(end.x, end.y)
-
-        # if len(incorrect_ship) == 3:
-        #     if not self.is_not_diagonal_neigboard(start.x, start.y) and not self.is_diagonal_neigboard(start.x, start.y):
-        #         self.set_possible_cell(start.x, start.y)
-        #     if not self.is_not_diagonal_neigboard(end.x, end.y) and not self.is_diagonal_neigboard(end.x, end.y):
-        #         self.set_possible_cell(end.x, end.y)
 
     def set_possible_cell(self, x, y):
         if (y < 0) or (x < 0) or (y >= self.height) or (x >= self.width):
@@ -226,12 +230,8 @@ class Map(object):
             self.cells[x][y] = Cell.DEAD_SHIP_PEACE
             self.ship_peace_count -= 1
 
-    @staticmethod
-    def get_random_map(map=None):
-        result = Map()
-        for x in range(map.width):
-            for y in range(map.height):
-                if map.cells[x][y] == Cell.SHIP_PEACE:
-                    result.try_set_new_peace_of_ship(Point(x, y))
+    def randomly_arrange_ship(self):
+        pass # AI.generate_random_map(self)
 
-        return result
+    def randomly_shot(self):
+        pass

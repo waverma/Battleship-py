@@ -19,6 +19,7 @@ class Window(object):
 
         while not is_closed:
             user_event = UserEvent()
+            self.display.fill((0, 0, 0))
 
             # обработка событий
             for e in pygame.event.get():
@@ -44,10 +45,9 @@ class Window(object):
                 if e.type == pygame.MOUSEBUTTONDOWN:
 
                     for c in self.game.user_controls:
-                        if c.enable and c.collision.contain(Point(e.pos[0], e.pos[1])):
+                        if c.enable and c.x <= e.pos[0] <= c.width + c.x and c.y <= e.pos[1] <= c.height + c.y:
                             user_event.focus_element = c
-                            user_event.relatively_mouse_location = Point(e.pos[0] - c.collision.location.x,
-                                                                         e.pos[1] - c.collision.location.y)
+                            user_event.relatively_mouse_location = Point(e.pos[0] - c.x, e.pos[1] - c.y)
 
                     user_event.is_left_mouse_was_clicked_last_update = user_event.is_left_mouse_click
                     user_event.is_left_mouse_click = e.button == 1
@@ -63,6 +63,6 @@ class Window(object):
 
             if controls is not None:
                 for control in controls:
-                    control.draw_map(self.display)
+                    control.draw(self.display)
 
             pygame.display.update()
