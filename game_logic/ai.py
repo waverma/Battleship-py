@@ -81,7 +81,7 @@ class AI(object):
                 if AI.try_place_ship(map, peace_count - 1, s_ship):
                     return True, point
                 else:
-                    map.try_remove_new_peace_of_ship(point)
+                    map.try_remove_peace_of_ship(point)
 
         return False, None
 

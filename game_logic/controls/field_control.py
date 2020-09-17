@@ -50,7 +50,7 @@ class FieldControl(UserControl):
         if self.map.is_battle_mode:
             pass
         else:
-            r = self.game.player_field.try_remove_new_peace_of_ship(cell_point)
+            r = self.game.player_field.try_remove_peace_of_ship(cell_point)
             if r[0]:
                 self.game.ship_count[r[1]] -= 1
 

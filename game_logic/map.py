@@ -9,8 +9,12 @@ class Map(object):
         self.width = width
         self.height = height
         self.cells = []
-        self.ship_peace_count = 0
-        self.ship_peace_count_limit = 20
+
+        self.ship_count = dict()
+        self.ship_count[ShipType.FOUR_DECK] = 1
+        self.ship_count[ShipType.THREE_DECK] = 2
+        self.ship_count[ShipType.TWO_DECK] = 3
+        self.ship_count[ShipType.SINGLE_DECK] = 4
 
         self.is_battle_mode = False
         self.is_ship_building = False
@@ -170,7 +174,7 @@ class Map(object):
                                           current_cell_position.y + direction.y)
         return last_valid_point
 
-    def try_remove_new_peace_of_ship(self, index: Point):
+    def try_remove_peace_of_ship(self, index: Point):
         x = index.x
         y = index.y
 
@@ -229,9 +233,3 @@ class Map(object):
         elif self.cells[x][y] == Cell.SHIP_PEACE:
             self.cells[x][y] = Cell.DEAD_SHIP_PEACE
             self.ship_peace_count -= 1
-
-    def randomly_arrange_ship(self):
-        pass # AI.generate_random_map(self)
-
-    def randomly_shot(self):
-        pass
