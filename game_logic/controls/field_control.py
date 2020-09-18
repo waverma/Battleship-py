@@ -1,5 +1,3 @@
-import random
-
 import pygame
 
 from game_logic.ai import AI
@@ -32,14 +30,12 @@ class FieldControl(UserControl):
         )
 
         if self.map.is_battle_mode:
-            self.game.bot_field.strike(cell_point)
-
-            AI.generate_random_shot(self.game.player_field)
+            self.map.strike(cell_point)
+            AI.generate_random_shot(self.game.player_field_control.map)
         else:
-            if self.game.ship_count[self.game.current_ship_type] != self.game.ship_count_limit[
-                self.game.current_ship_type] and \
-                    self.game.player_field.try_set_new_peace_of_ship(cell_point, self.game.current_ship_type):
-                self.game.ship_count[self.game.current_ship_type] += 1
+            if self.map.ship_count[self.game.current_ship_type] > 0 and \
+                    self.map.try_set_new_peace_of_ship(cell_point, self.game.current_ship_type):
+                self.map.ship_count[self.game.current_ship_type] -= 1
 
     def on_right_mouse(self, e):
         cell_point = Point(
@@ -47,12 +43,10 @@ class FieldControl(UserControl):
             e.relatively_mouse_location.y // e.focus_element.cell_height
         )
 
-        if self.map.is_battle_mode:
-            pass
-        else:
-            r = self.game.player_field.try_remove_peace_of_ship(cell_point)
+        if not self.map.is_battle_mode:
+            r = self.map.try_remove_peace_of_ship(cell_point)
             if r[0]:
-                self.game.ship_count[r[1]] -= 1
+                self.map.ship_count[r[1]] += 1
 
     def draw(self, display):
         for x in range(self.map.width):

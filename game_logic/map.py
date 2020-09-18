@@ -232,4 +232,3 @@ class Map(object):
             self.cells[x][y] = Cell.SHOT
         elif self.cells[x][y] == Cell.SHIP_PEACE:
             self.cells[x][y] = Cell.DEAD_SHIP_PEACE
-            self.ship_peace_count -= 1

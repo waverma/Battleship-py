@@ -1,12 +1,9 @@
-from game_logic.point import Point
-from game_logic.size import Size
-
-
 class Rectangle(object):
-    def __init__(self, point: Point, size: Size):
-        self.location = point
-        self.size = size
+    def __init__(self, x: int, y: int, width: int, height: int):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
-    def contain(self, point: Point):
-        return self.location.x <= point.x <= self.size.width + self.location.x \
-               and self.location.y <= point.y <= self.size.height + self.location.y
+    def contain(self, x, y):
+        return self.x <= x <= self.width + self.x and self.y <= y <= self.height + self.y

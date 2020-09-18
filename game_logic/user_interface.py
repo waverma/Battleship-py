@@ -10,8 +10,7 @@ class UserInterface(object):
     def update(self, e: UserEvent):
 
         for control in self.buffer:
-            if control.enable and \
-                    control.x <= e.absolute_mouse_location.x <= control.width + control.x and \
+            if control.x <= e.absolute_mouse_location.x <= control.width + control.x and \
                     control.y <= e.absolute_mouse_location.y <= control.height + control.y:
 
                 e.focus_element = control
