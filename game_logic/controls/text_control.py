@@ -8,8 +8,8 @@ class TextControl(UserControl):
         super().__init__(x, y, width, height)
 
         self.text = text
-        self.back_color = (0, 0, 255)
-        self.font_color = (255, 0, 255)
+        self.back_color = (255, 116, 0)
+        self.font_color = (12, 64, 171)
         self.font = 'arial'
         self.text_size = 36
 

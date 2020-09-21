@@ -52,8 +52,7 @@ class Game(object):
 
         self.player_field_control.game = self.bot_field_control.game = self
 
-        self.bot_field_control.colors[Cell.SHIP_PEACE] = (255, 255, 255)
-        self.bot_field_control.colors[Cell.POSSIBLE_SHIP_PLACE] = (255, 255, 255)
+        self.bot_field_control.colors[Cell.SHIP_PEACE] = self.bot_field_control.colors[Cell.POSSIBLE_SHIP_PLACE] = self.bot_field_control.colors[Cell.EMPTY]
 
         self.start_button.text = "В БОЙ"
         self.start_button.commands.append(lambda: self.try_begin())
@@ -97,9 +96,11 @@ class Game(object):
         self.labels[ShipType.FOUR_DECK][1].text = self.player_field_control.map.ship_count[ShipType.FOUR_DECK]
 
         if self.stage == GameStage.PRE_GAME:
+            if len(e.pressed_keys_list) != 0 and e.pressed_keys_list[pygame.K_r]:
+                self.player_field_control.map = AI.generate_random_map()
 
             if not self.player_field_control.map.is_ship_building:
-                self.labels[self.current_ship_type][0].back_color = (255, 0, 0)
+                self.labels[self.current_ship_type][0].back_color = (255, 116, 0)
                 if len(e.pressed_keys_list) != 0 and e.pressed_keys_list[pygame.K_1]:
                     self.current_ship_type = ShipType.SINGLE_DECK
                 if len(e.pressed_keys_list) != 0 and e.pressed_keys_list[pygame.K_2]:

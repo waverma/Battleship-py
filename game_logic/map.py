@@ -16,6 +16,8 @@ class Map(object):
         self.ship_count[ShipType.TWO_DECK] = 3
         self.ship_count[ShipType.SINGLE_DECK] = 4
 
+        self.last_ship_cell = list()
+
         self.is_battle_mode = False
         self.is_ship_building = False
 
@@ -224,11 +226,38 @@ class Map(object):
                     self.redistribute_possible_ship_places(None, None)
         return False, None
 
-    def strike(self, index: Point):
+    def try_strike(self, index: Point):
         x = index.x
         y = index.y
+
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            return False
 
         if self.cells[x][y] == Cell.EMPTY:
             self.cells[x][y] = Cell.SHOT
         elif self.cells[x][y] == Cell.SHIP_PEACE:
             self.cells[x][y] = Cell.DEAD_SHIP_PEACE
+            snake = self.get_all_snake_incident_shp_cell(x, y, Cell.DEAD_SHIP_PEACE)
+
+            if len(snake[0]) > 1:
+                fc = Cell.EMPTY
+                sc = Cell.EMPTY
+                if 0 <= snake[1].x < self.width and 0 <= snake[1].y < self.height:
+                    fc = self.cells[snake[1].x][snake[1].y]
+
+                if 0 <= snake[2].x < self.width and 0 <= snake[2].y < self.height:
+                    sc = self.cells[snake[2].x][snake[2].y]
+
+                if fc != Cell.SHIP_PEACE and sc != Cell.SHIP_PEACE:
+                    self.last_ship_cell.append(index)
+            else:
+                r1 = (0 < x and self.cells[x-1][y] != Cell.SHIP_PEACE) or x == 0
+                r2 = (0 < y and self.cells[x][y-1] != Cell.SHIP_PEACE) or y == 0
+                r3 = (x < self.width - 1 and self.cells[x+1][y] != Cell.SHIP_PEACE) or x == self.width - 1
+                r4 = (y < self.height - 1 and self.cells[x][y+1] != Cell.SHIP_PEACE) or y == self.height - 1
+                if r1 and r2 and r3 and r4:
+                    self.last_ship_cell.append(index)
+
+        else:
+            return False
+        return True

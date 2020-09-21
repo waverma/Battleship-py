@@ -16,7 +16,7 @@ class Window(object):
 
     def run(self):
         while not self.is_window_closed:
-            self.display.fill((0, 0, 0))
+            self.display.fill((30, 213, 200))
 
             # обновление игры
             self.game.update(self.event_update())

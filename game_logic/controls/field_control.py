@@ -19,9 +19,11 @@ class FieldControl(UserControl):
         self.colors = dict()
         self.colors[Cell.DEAD_SHIP_PEACE] = (255, 0, 0)
         self.colors[Cell.SHOT] = (0, 255, 0)
-        self.colors[Cell.EMPTY] = (255, 255, 255)
+        self.colors[Cell.EMPTY] = (94, 242, 198)
         self.colors[Cell.POSSIBLE_SHIP_PLACE] = (255, 255, 0)
         self.colors[Cell.SHIP_PEACE] = (0, 0, 255)
+
+        # self.back_color = (255, 216, 214)
 
     def on_left_mouse(self, e):
         cell_point = Point(
@@ -30,8 +32,8 @@ class FieldControl(UserControl):
         )
 
         if self.map.is_battle_mode:
-            self.map.strike(cell_point)
-            AI.generate_random_shot(self.game.player_field_control.map)
+            if self.map.try_strike(cell_point):
+                AI.generate_random_shot(self.game.player_field_control.map)
         else:
             if self.map.ship_count[self.game.current_ship_type] > 0 and \
                     self.map.try_set_new_peace_of_ship(cell_point, self.game.current_ship_type):
@@ -49,8 +51,17 @@ class FieldControl(UserControl):
                 self.map.ship_count[r[1]] += 1
 
     def draw(self, display):
+        # pygame.draw.rect(
+        #     display, self.back_color,
+        #     [self.x, self.y, self.cell_width * self.map.width, self.cell_height * self.map.height])
+
         for x in range(self.map.width):
             for y in range(self.map.height):
-                pygame.draw.rect(
-                    display, self.colors[self.map.cells[x][y]],
-                    [self.x + x * self.cell_width, self.y + y * self.cell_height, self.cell_width, self.cell_height])
+                if Point(x, y) in self.map.last_ship_cell:
+                    pygame.draw.rect(
+                        display, (0, 0, 0),
+                        [self.x + x * self.cell_width + 1, self.y + y * self.cell_height + 1, self.cell_width - 2, self.cell_height - 2])
+                else:
+                    pygame.draw.rect(
+                        display, self.colors[self.map.cells[x][y]],
+                        [self.x + x * self.cell_width + 1, self.y + y * self.cell_height + 1, self.cell_width - 2, self.cell_height - 2])

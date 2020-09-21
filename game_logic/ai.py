@@ -39,6 +39,9 @@ class AI(object):
                     if result_map.cells[x][y] == Cell.SHIP_PEACE:
                         ship_count += 1
 
+        for i in result_map.ship_count:
+            result_map.ship_count[i] = 0
+
         return result_map
 
     @staticmethod
@@ -101,4 +104,4 @@ class AI(object):
                 if field.cells[x][y] != Cell.SHOT and field.cells[x][y] != Cell.DEAD_SHIP_PEACE:
                     points.append(Point(x, y))
 
-        field.strike(points[random.randint(0, len(points) - 1)])
+        field.try_strike(points[random.randint(0, len(points) - 1)])

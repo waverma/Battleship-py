@@ -40,7 +40,7 @@ class GameTests(unittest.TestCase):
 
             for x in range(self.game.bot_field_control.map.width):
                 for y in range(self.game.bot_field_control.map.height):
-                    self.game.bot_field_control.map.strike(Point(x, y))
+                    self.game.bot_field_control.map.try_strike(Point(x, y))
 
             assert self.game.is_completed()[0]
             assert self.game.is_completed()[1]
@@ -48,7 +48,7 @@ class GameTests(unittest.TestCase):
             self.game.bot_field_control.map = AI.generate_random_map()
             for x in range(self.game.player_field_control.map.width):
                 for y in range(self.game.player_field_control.map.height):
-                    self.game.player_field_control.map.strike(Point(x, y))
+                    self.game.player_field_control.map.try_strike(Point(x, y))
 
             assert self.game.is_completed()[0]
             assert not self.game.is_completed()[1]
