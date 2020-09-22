@@ -1,6 +1,8 @@
 # Battleship-py - простая классическая 2D игра Морской бой
 # Установка
 git clone https://github.com/waverma/Battleship-py
+# Установка зависимостей
+pip install -r requirements.txt
 # Запуск
 python3 main.py либо py main.py
 # Правила
