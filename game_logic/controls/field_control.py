@@ -23,6 +23,8 @@ class FieldControl(UserControl):
         self.colors[Cell.POSSIBLE_SHIP_PLACE] = (255, 255, 0)
         self.colors[Cell.SHIP_PEACE] = (0, 0, 255)
 
+        self.padding = 1
+
         # self.back_color = (255, 216, 214)
 
     def on_left_mouse(self, e):
@@ -51,17 +53,13 @@ class FieldControl(UserControl):
                 self.map.ship_count[r[1]] += 1
 
     def draw(self, display):
-        # pygame.draw.rect(
-        #     display, self.back_color,
-        #     [self.x, self.y, self.cell_width * self.map.width, self.cell_height * self.map.height])
-
         for x in range(self.map.width):
             for y in range(self.map.height):
-                if Point(x, y) in self.map.last_ship_cell:
-                    pygame.draw.rect(
-                        display, (0, 0, 0),
-                        [self.x + x * self.cell_width + 1, self.y + y * self.cell_height + 1, self.cell_width - 2, self.cell_height - 2])
+                rect = [self.x + x * self.cell_width + self.padding,
+                        self.y + y * self.cell_height + self.padding,
+                        self.cell_width - self.padding*2,
+                        self.cell_height - self.padding*2]
+                if Point(x, y) in self.map.last_ship_cell and not self.is_user_mode:
+                    pygame.draw.rect(display, (0, 0, 0), rect)
                 else:
-                    pygame.draw.rect(
-                        display, self.colors[self.map.cells[x][y]],
-                        [self.x + x * self.cell_width + 1, self.y + y * self.cell_height + 1, self.cell_width - 2, self.cell_height - 2])
+                    pygame.draw.rect(display, self.colors[self.map.cells[x][y]], rect)

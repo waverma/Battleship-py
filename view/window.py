@@ -12,7 +12,7 @@ class Window(object):
         self.game = game
         self.is_window_closed = False
 
-        pygame.display.set_caption("Test name")
+        pygame.display.set_caption("MapTest name")
 
     def run(self):
         while not self.is_window_closed:

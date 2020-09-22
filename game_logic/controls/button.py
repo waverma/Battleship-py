@@ -24,5 +24,5 @@ class Button(UserControl):
         display.blit(text_surface, (self.x, self.y))
 
     def on_left_mouse(self, e):
-        for c in self.commands:
-            c()
+        for command in self.commands:
+            command()

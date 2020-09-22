@@ -116,7 +116,8 @@ class Game(object):
                 self.end(self.is_completed()[1])
 
         elif self.stage == GameStage.POST_GAME:
-            pass
+            if len(e.pressed_keys_list) != 0 and e.pressed_keys_list[pygame.K_SPACE]:
+                self.prepare_to_begin()
 
         self.update_graphic()
 

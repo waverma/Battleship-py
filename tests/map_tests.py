@@ -6,7 +6,7 @@ from game_logic.map import Map
 from game_logic.point import Point
 
 
-class Test(unittest.TestCase):
+class MapTest(unittest.TestCase):
     def setUp(self):
         self.field = Map()
 
@@ -104,19 +104,6 @@ class Test(unittest.TestCase):
         assert len(get_all_cell_of(self.field, Cell.DEAD_SHIP_PEACE)) == 0
         assert len(get_all_cell_of(self.field, Cell.EMPTY)) == 14
         assert len(get_all_cell_of(self.field, Cell.POSSIBLE_SHIP_PLACE)) == 82
-
-    # TODO Tests
-    def test_get_start_snake_position_horizontal(self):
-        pass
-
-    def test_get_start_snake_position_vertical(self):
-        pass
-
-    def test_get_all_snake_incident_ship_cell_horizontal(self):
-        pass
-
-    def test_get_all_snake_incident_ship_cell_vertical(self):
-        pass
 
     def test_try_remove_peace_of_ship(self):
         self.field.try_set_new_peace_of_ship(Point(0, 0), ShipType.FOUR_DECK)

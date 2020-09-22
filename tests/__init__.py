@@ -1,5 +1,5 @@
 import unittest
-from tests.map_tests import Test
+from tests.map_tests import MapTest
 from tests.ai_tests import AITest
 from tests.game_tests import GameTests
 
