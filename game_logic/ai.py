@@ -104,4 +104,4 @@ class AI(object):
                 if field.cells[x][y] != Cell.SHOT and field.cells[x][y] != Cell.DEAD_SHIP_PEACE:
                     points.append(Point(x, y))
 
-        field.try_strike(points[random.randint(0, len(points) - 1)])
+        return field.try_strike(points[random.randint(0, len(points) - 1)])

@@ -229,14 +229,17 @@ class Map(object):
     def try_strike(self, index: Point):
         x = index.x
         y = index.y
+        is_success = False
 
         if not (0 <= x < self.width and 0 <= y < self.height):
-            return False
+            return False, False
 
         if self.cells[x][y] == Cell.EMPTY:
             self.cells[x][y] = Cell.SHOT
         elif self.cells[x][y] == Cell.SHIP_PEACE:
             self.cells[x][y] = Cell.DEAD_SHIP_PEACE
+            is_success = True
+
             snake = self.get_all_snake_incident_shp_cell(x, y, Cell.DEAD_SHIP_PEACE)
 
             if len(snake[0]) > 1:
@@ -259,5 +262,5 @@ class Map(object):
                     self.last_ship_cell.append(index)
 
         else:
-            return False
-        return True
+            return False, False
+        return True, is_success

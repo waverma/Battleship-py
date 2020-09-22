@@ -34,8 +34,10 @@ class FieldControl(UserControl):
         )
 
         if self.map.is_battle_mode:
-            if self.map.try_strike(cell_point):
-                AI.generate_random_shot(self.game.player_field_control.map)
+            shot_result = self.map.try_strike(cell_point)
+            if shot_result[0] and not shot_result[1]:
+                while AI.generate_random_shot(self.game.player_field_control.map)[1]:
+                    a = 1
         else:
             if self.map.ship_count[self.game.current_ship_type] > 0 and \
                     self.map.try_set_new_peace_of_ship(cell_point, self.game.current_ship_type):
