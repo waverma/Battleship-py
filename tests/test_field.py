@@ -24,9 +24,9 @@ class TestField(TestCase):
         field = Field()
         field.reset()
 
-        self.assertFalse(field.get_next() is None)
+        self.assertFalse(field.get_next_ship_to_place() is None)
         field.ships_to_place = []
-        self.assertTrue(field.get_next() is None)
+        self.assertTrue(field.get_next_ship_to_place() is None)
 
     def test_get_cell_type(self):
         field = Field()
@@ -106,3 +106,15 @@ class TestField(TestCase):
 
         self.assertFalse(field.get_ship_on((0, 0)) is None)
         self.assertTrue(field.get_ship_on((2, 3)) is None)
+
+    def test_generate_random_shot(self):
+        for _ in range(100):
+            field = Field()
+            field.make_random_shot()
+            self.assertEqual(len(field.shots), 1)
+            field.make_random_shot()
+            self.assertEqual(len(field.shots), 2)
+
+    def test_arrange_ships_automatically(self):
+        for _ in range(100):
+            self.assertEqual(len(Field.get_arrange_ships()), 10)

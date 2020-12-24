@@ -1,3 +1,4 @@
+import random
 from typing import Tuple
 
 from battleship.engine.game_constants import (
@@ -5,17 +6,19 @@ from battleship.engine.game_constants import (
     FOUR_DECK_COUNT,
     SINGLE_DECK_COUNT,
     THREE_DECK_COUNT,
-    TWO_DECK_COUNT,
+    TWO_DECK_COUNT, SHOT_ATTEMPTS_COUNT, ATTEMPTS_PLACE_SHIP,
 )
 from battleship.engine.ship import Ship
 from battleship.enums import Cell
 
 
 class Field:
-    def __init__(self):
+    def __init__(self, ships: list = None):
         self.width = DEFAULT_FIELD_SIZE[0]
         self.height = DEFAULT_FIELD_SIZE[1]
         self.ships = []
+        if ships is not None:
+            self.ships = ships
         self.ships_to_place = []
         self.shots = []
 
@@ -39,7 +42,7 @@ class Field:
         for _ in range(FOUR_DECK_COUNT):
             self.ships_to_place.append(Ship(4))
 
-    def get_next(self) -> Ship:
+    def get_next_ship_to_place(self) -> Ship:
         if len(self.ships_to_place) != 0:
             return self.ships_to_place[0]
 
@@ -113,3 +116,51 @@ class Field:
         for ship in self.ships:
             if location in ship:
                 return ship
+
+    @staticmethod
+    def get_arrange_ships() -> list:
+        ships_to_place = []
+
+        for _ in range(FOUR_DECK_COUNT):
+            ships_to_place.append(Ship(4))
+        for _ in range(THREE_DECK_COUNT):
+            ships_to_place.append(Ship(3))
+        for _ in range(TWO_DECK_COUNT):
+            ships_to_place.append(Ship(2))
+        for _ in range(SINGLE_DECK_COUNT):
+            ships_to_place.append(Ship(1))
+
+        while True:
+            auxiliary_field = Field()
+            for ship in ships_to_place:
+                for _ in range(ATTEMPTS_PLACE_SHIP):
+                    point = (random.randint(0, auxiliary_field.width),
+                             random.randint(0, auxiliary_field.height))
+                    if random.randint(0, 2) == 1:
+                        ship.rotate()
+                    if auxiliary_field.can_place_ship_on(ship, point):
+                        auxiliary_field.ships.append(ship)
+                        ship.placed_location = point
+                        break
+            if len(auxiliary_field.ships) == len(ships_to_place):
+                return auxiliary_field.ships
+
+    def make_random_shot(self) -> bool:
+        for _ in range(SHOT_ATTEMPTS_COUNT):
+            point = (
+                random.randint(0, self.width - 1),
+                random.randint(0, self.height - 1)
+            )
+            if point in self.shots:
+                continue
+            shot_result = self.shot(point)
+            return shot_result[1]
+
+        for x in range(self.width):
+            for y in range(self.height):
+                if (x, y) in self.shots:
+                    continue
+                shot_result = self.shot((x, y))
+                return shot_result[1]
+
+        return False

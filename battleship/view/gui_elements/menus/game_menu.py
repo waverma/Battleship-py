@@ -83,6 +83,17 @@ class GameMenu(UserElement):
             )
         )
 
+        timer_text = Text(
+            Rect(CELL_SIZE * 12, CELL_SIZE * 2, CELL_SIZE*4, CELL_SIZE),
+            (CELL_SIZE, CELL_SIZE),
+            "Осталось {} сек.".format(str(buffer_to_render.session_timer)),
+        )
+
+        for text_render_info in timer_text.get_render_info(
+                new_transform, buffer_to_render
+        ):
+            buffer_to_draw.add(text_render_info)
+
         for text_render_info in self.my_field_text_marker.get_render_info(
                 new_transform, buffer_to_render
         ):

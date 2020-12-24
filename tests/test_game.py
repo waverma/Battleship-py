@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from battleship.buffers.buffer_to_game_logic import BufferToGameLogic
 from battleship.buffers.buffer_to_render import BufferToRender
-from battleship.engine.ai import AI
 from battleship.engine.field import Field
 from battleship.engine.game import Game
 from battleship.enums import InterfaceStage
@@ -11,9 +10,8 @@ from battleship.enums import InterfaceStage
 class TestGame(TestCase):
     def test_extract_to_render(self):
         game = Game()
-        game.bot_field = Field()
-        AI.arrange_ships_automatically(game.player_field)
-        AI.arrange_ships_automatically(game.bot_field)
+        game.bot_field = Field(Field.get_arrange_ships())
+        game.player_field = Field(Field.get_arrange_ships())
         buffer = BufferToGameLogic()
         buffer_to_render = BufferToRender()
         game.extract_to_render(BufferToGameLogic(), buffer_to_render)
@@ -45,23 +43,23 @@ class TestGame(TestCase):
         game.bot_field = Field()
         self.assertFalse(game_result[0])
         self.assertFalse(game_result[1])
-        AI.arrange_ships_automatically(game.player_field)
-        AI.arrange_ships_automatically(game.bot_field)
+        game.bot_field = Field(Field.get_arrange_ships())
+        game.player_field = Field(Field.get_arrange_ships())
 
         game_result = game.is_game_completed()
         self.assertFalse(game_result[0])
         self.assertTrue(game_result[1])
 
         for _ in range(100):
-            AI.generate_random_shot(game.bot_field)
+            game.bot_field = Field(Field.get_arrange_ships())
 
         game_result = game.is_game_completed()
         self.assertTrue(game_result[0])
         self.assertTrue(game_result[1])
 
-        AI.arrange_ships_automatically(game.bot_field)
+        game.bot_field = Field(Field.get_arrange_ships())
         for _ in range(100):
-            AI.generate_random_shot(game.player_field)
+            game.player_field = Field(Field.get_arrange_ships())
 
         game_result = game.is_game_completed()
         self.assertTrue(game_result[0])

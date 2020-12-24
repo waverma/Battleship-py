@@ -25,7 +25,7 @@ class PostGameElement(UserElement):
         self.buttons = list()
         self.back_color = DEFAULT_DISPLAY_COLOR
         self.text = Text(
-            Rect(CELL_SIZE * 11, CELL_SIZE * 5, CELL_SIZE * 5, CELL_SIZE),
+            Rect(CELL_SIZE * 6, CELL_SIZE * 5, CELL_SIZE * 15, CELL_SIZE),
             (CELL_SIZE * 11, CELL_SIZE * 5),
         )
         self.text.draw_info.text_size = 30
@@ -84,7 +84,10 @@ class PostGameElement(UserElement):
             end_battle_message = "Победа!"
             self.text.draw_info.fill_color = GREEN_COLOR
         else:
-            end_battle_message = "Поражение"
+            if buffer_to_render.is_time_up:
+                end_battle_message = "Поражение! Время вышло!"
+            else:
+                end_battle_message = "Поражение! Все твои корабли потоплены"
             self.text.draw_info.fill_color = RED_COLOR
 
         self.text.draw_info.text = end_battle_message
