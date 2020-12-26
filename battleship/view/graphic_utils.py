@@ -15,6 +15,12 @@ DEFAULT_GAME_FIELD_ELEMENT_COLLISION = Rect(
     DEFAULT_GAME_FIELD_ELEMENT_SIZE[1],
 )
 
+INFO_TEXT = "Перейдите на сайт, " \
+            "разрешите этому приложению делать посты, " \
+            "скопируйте адресс сайта, " \
+            "на который вас перенаправило и нажмите ЗДЕСЬ 'V'. " \
+            "Далее подтвердите"
+
 DEFAULT_TEXT_FILLCOLOR = (255, 116, 0)
 WHITE_COLOR = (255, 255, 255)
 RED_GREEN_COLOR = (255, 255, 0)

@@ -26,6 +26,11 @@ class BufferToGameLogic(Buffer):
         self.rotate_request = False
         self.random_field_request = False
 
+        # VkAuthorization
+        self.to_browser_request = False
+        self.apply = False
+        self.url = ""
+
         # Pause
         self.is_disconnect_button_pressed = False
         self.is_return_button_pressed = False
@@ -33,6 +38,7 @@ class BufferToGameLogic(Buffer):
         # PostGame
         self.restart_request = False
         self.next_request = False
+        self.vk_post_request = False
         self.is_to_main_menu_button_pressed = False
         self.game_info = ""
 
@@ -72,6 +78,7 @@ class BufferToGameLogic(Buffer):
         # PostGame
         self.restart_request = other.restart_request
         self.next_request = other.next_request
+        self.vk_post_request = other.vk_post_request
         self.is_to_main_menu_button_pressed = (
             other.is_to_main_menu_button_pressed
         )
@@ -116,6 +123,7 @@ class BufferToGameLogic(Buffer):
         # PostGame
         other.restart_request = self.restart_request
         other.next_request = self.next_request
+        other.vk_post_request = self.vk_post_request
         other.is_to_main_menu_button_pressed = (
             self.is_to_main_menu_button_pressed
         )

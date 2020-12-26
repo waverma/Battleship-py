@@ -12,7 +12,7 @@ from battleship.view.graphic_utils import (
     GREEN_COLOR,
     LEFT_BUTTON_RECT,
     RED_COLOR,
-    RIGHT_BUTTON_RECT,
+    RIGHT_BUTTON_RECT, DEFAULT_TEXT_FILLCOLOR,
 )
 from battleship.view.gui_elements.button import Button
 from battleship.view.gui_elements.text import Text
@@ -42,7 +42,14 @@ class PostGameElement(UserElement):
             "В главное меню",
         )
 
+        self.vk_post_button = Button(
+            Rect(CELL_SIZE*16, CELL_SIZE*10, CELL_SIZE*10, CELL_SIZE*2),
+            (absolute_position[0], absolute_position[1]),
+            "Рассказать", fill_color=RED_COLOR
+        )
+
         self.buttons.append(self.restart_button)
+        self.buttons.append(self.vk_post_button)
         self.buttons.append(self.exit_button)
         self.text_size = 10
 
@@ -54,6 +61,8 @@ class PostGameElement(UserElement):
         output_buffer.is_to_main_menu_button_pressed = (
             self.exit_button.is_clicked
         )
+        if self.vk_post_button.is_clicked:
+            output_buffer.vk_post_request = self.vk_post_button.is_clicked
 
     def get_render_info(
         self, transform: Tuple, buffer_to_render: BufferToRender
@@ -72,6 +81,14 @@ class PostGameElement(UserElement):
                 fill_color=self.back_color,
             )
         )
+
+        if buffer_to_render.vk_access:
+            self.vk_post_button.draw_info.fill_color = RED_COLOR
+        else:
+            if buffer_to_render.posted:
+                self.vk_post_button.draw_info.fill_color = GREEN_COLOR
+            else:
+                self.vk_post_button.draw_info.fill_color = DEFAULT_TEXT_FILLCOLOR
 
         for button in self.buttons:
             button_info = button.get_render_info(

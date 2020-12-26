@@ -5,10 +5,12 @@ from battleship.buffers.buffer_to_render import BufferToRender
 from battleship.engine.field import Field
 from battleship.engine.game_constants import GAME_SESSION_LENGTH
 from battleship.enums import Cell, InterfaceStage
+from battleship.vk_provider import VkProvider
 
 
 def get_cool_down(tick_count, tick_pointer) -> int:
-    return round(((tick_count * (1000 / 60)) / 1000) - ((tick_pointer * (1000 / 60)) / 1000))
+    return round(((tick_count * (1000 / 60)) / 1000) -
+                 ((tick_pointer * (1000 / 60)) / 1000))
 
 
 class Game:
@@ -18,6 +20,10 @@ class Game:
         self.bot_field = None
         self.current_session_tick = 0
         self.stage = InterfaceStage.MainMenu
+
+        self.has_posted = False
+        self.vk_p = VkProvider()
+        self.current_url = ''
 
     def is_game_completed(self):
         if self.current_session_tick >= GAME_SESSION_LENGTH:
@@ -49,6 +55,7 @@ class Game:
         elif buffer.interface_stage == InterfaceStage.PrepareToGame:
             if buffer.start and \
                     self.player_field.get_next_ship_to_place() is None:
+                self.has_posted = False
                 self.bot_field = Field(Field.get_arrange_ships())
                 self.stage = InterfaceStage.InGame
                 self.current_session_tick = 0
@@ -75,6 +82,25 @@ class Game:
                 self.player_field.reset()
             if buffer.is_to_main_menu_button_pressed:
                 self.stage = InterfaceStage.MainMenu
+            if not self.has_posted and buffer.vk_post_request:
+                if self.vk_p.send_post_with("Я победил!!"):
+                    self.has_posted = True
+                else:
+                    self.stage = InterfaceStage.VkAuthorization
+
+        elif buffer.interface_stage == InterfaceStage.VkAuthorization:
+            if buffer.url != "":
+                self.current_url = buffer.url
+            if buffer.to_browser_request:
+                self.vk_p.try_get_access()
+            if buffer.is_return_button_pressed:
+                self.stage = InterfaceStage.PostGame
+            if buffer.apply:
+                VkProvider.save_user_id_and_access_token_by(self.current_url)
+                self.vk_p = VkProvider()
+                if self.vk_p.send_post_with("Я победил!!"):
+                    self.has_posted = True
+                self.stage = InterfaceStage.PostGame
 
         elif buffer.interface_stage == InterfaceStage.Pause:
             if buffer.is_to_main_menu_button_pressed:
@@ -88,6 +114,8 @@ class Game:
     def extract_to_render(
             self, buffer: BufferToGameLogic, output_buffer: BufferToRender
     ):
+        output_buffer.url = self.current_url
+        output_buffer.posted = self.has_posted
         output_buffer.player_cells = []
         output_buffer.bot_cells = []
         output_buffer.field_size = (

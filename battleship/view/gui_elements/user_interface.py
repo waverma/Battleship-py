@@ -13,6 +13,8 @@ from battleship.view.gui_elements.menus.pause_menu import PauseMenu
 from battleship.view.gui_elements.menus.post_game_element import (
     PostGameElement,
 )
+from battleship.view.gui_elements.menus.vk_authorization_menu import \
+    VkAuthorizationMenu
 
 
 def render_per_element(buffer_to_render, new_buffer_to_draw, element):
@@ -34,6 +36,9 @@ class UserInterface:
             DEFAULT_MENU_COLLISION, (0, 0)
         )
         self.post_game_menu = PostGameElement(
+            DEFAULT_MENU_COLLISION, (0, 0)
+        )
+        self.vk_authorization_menu = VkAuthorizationMenu(
             DEFAULT_MENU_COLLISION, (0, 0)
         )
         self.main_menu = MainMenu(DEFAULT_MENU_COLLISION, (0, 0))
@@ -63,6 +68,9 @@ class UserInterface:
         elif game_state == InterfaceStage.PostGame:
             self.post_game_menu.update(e, output_buffer)
 
+        elif game_state == InterfaceStage.VkAuthorization:
+            self.vk_authorization_menu.update(e, output_buffer)
+
     def render(
         self, buffer_to_render: BufferToRender, buffer_to_draw: DrawingBuffer
     ):
@@ -83,6 +91,11 @@ class UserInterface:
         elif self.stage == InterfaceStage.PrepareToGame:
             self.prepare_game_field_element.get_render_info(
                 (0, 0, 1, 1), buffer_to_render, new_buffer_to_draw, False
+            )
+
+        elif self.stage == InterfaceStage.VkAuthorization:
+            render_per_element(
+                buffer_to_render, new_buffer_to_draw, self.vk_authorization_menu
             )
 
         elif self.stage == InterfaceStage.PostGame:

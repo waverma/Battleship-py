@@ -7,6 +7,7 @@ class InterfaceStage(Enum):
     Pause = 2
     PostGame = 3
     PrepareToGame = 4
+    VkAuthorization = 5
 
 
 class Cell(Enum):

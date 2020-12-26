@@ -10,11 +10,14 @@ class BufferToRender(Buffer):
         self.session_timer = 0
         self.points = ""
         self.battle_result = ""
+        self.url = ""
         self.field_size = (0, 0)
         self.player_cells = []
         self.bot_cells = []
         self.pre_show_cell = []
         self.is_time_up = False
+        self.vk_access = False
+        self.posted = False
 
     def update(self, other: "BufferToRender"):
         if other.is_locked or self.is_locked:
@@ -27,6 +30,7 @@ class BufferToRender(Buffer):
         self.game_stage = other.game_stage
         self.field_size = other.field_size
         self.battle_result = other.battle_result
+        self.url = other.url
 
         other.unlock()
         self.unlock()
@@ -42,6 +46,7 @@ class BufferToRender(Buffer):
         other.game_stage = self.game_stage
         other.field_size = self.field_size
         other.battle_result = self.battle_result
+        other.url = self.url
 
         self.unlock()
 
