@@ -1,9 +1,12 @@
-from typing import Tuple
-
 from battleship.buffers.buffer_to_game_logic import BufferToGameLogic
 from battleship.buffers.buffer_to_render import BufferToRender
 from battleship.engine.field import Field
-from battleship.engine.game_constants import GAME_SESSION_LENGTH
+from battleship.engine.game_constants import (
+    GAME_SESSION_LENGTH,
+    LOSE_TEXT_FOR_VK_POST,
+    WIN_TEXT_FOR_VK_POST_PREFIX,
+    WIN_TEXT_FOR_VK_POST_SUFFIX,
+)
 from battleship.enums import Cell, InterfaceStage
 from battleship.vk_provider import VkProvider
 
@@ -83,7 +86,7 @@ class Game:
             if buffer.is_to_main_menu_button_pressed:
                 self.stage = InterfaceStage.MainMenu
             if not self.has_posted and buffer.vk_post_request:
-                if self.vk_p.send_post_with("Я победил!!"):
+                if self.vk_p.send_post_with(self.get_vk_text()):
                     self.has_posted = True
                 else:
                     self.stage = InterfaceStage.VkAuthorization
@@ -98,7 +101,7 @@ class Game:
             if buffer.apply:
                 VkProvider.save_user_id_and_access_token_by(self.current_url)
                 self.vk_p = VkProvider()
-                if self.vk_p.send_post_with("Я победил!!"):
+                if self.vk_p.send_post_with(self.get_vk_text()):
                     self.has_posted = True
                 self.stage = InterfaceStage.PostGame
 
@@ -181,3 +184,12 @@ class Game:
                 self.player_field.width and
                 0 <= buffer.pre_show_cell_index[1] < self.player_field.height
         )
+
+    def get_vk_text(self):
+        if self.is_game_completed()[1]:
+            return (WIN_TEXT_FOR_VK_POST_PREFIX +
+                    str(get_cool_down(
+                        GAME_SESSION_LENGTH,
+                        GAME_SESSION_LENGTH - self.current_session_tick)) +
+                    WIN_TEXT_FOR_VK_POST_SUFFIX)
+        return LOSE_TEXT_FOR_VK_POST

@@ -36,6 +36,19 @@ class TestGame(TestCase):
 
         self.assertEqual(len(game.player_field.ships), 10)
 
+        buffer.start = True
+        game.update(buffer, BufferToRender())
+
+        self.assertEqual(len(game.player_field.ships), 10)
+        self.assertEqual(len(game.bot_field.ships), 10)
+        self.assertEqual(game.stage, InterfaceStage.InGame)
+
+        buffer.interface_stage = InterfaceStage.InGame
+        buffer.shot_request = (0, 0)
+        game.update(buffer, BufferToRender())
+        self.assertEqual(len(game.player_field.shots), 1)
+        self.assertEqual(len(game.bot_field.shots), 1)
+
     def test_is_game_completed(self):
         game = Game()
 

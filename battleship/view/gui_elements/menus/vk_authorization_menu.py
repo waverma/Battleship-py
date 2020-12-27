@@ -1,7 +1,7 @@
-import _tkinter
 from tkinter import Tk
 from typing import Tuple
 
+import _tkinter
 import pygame
 from pygame.rect import Rect
 
@@ -10,10 +10,12 @@ from battleship.buffers.buffer_to_render import BufferToRender
 from battleship.buffers.user_event import UserEvent
 from battleship.view.draw_information import DrawInformation
 from battleship.view.graphic_utils import (
+    CELL_SIZE,
     DEFAULT_DISPLAY_COLOR,
+    INFO_TEXT,
     LEFT_BUTTON_RECT,
     RED_BLUE_COLOR,
-    RIGHT_BUTTON_RECT, CELL_SIZE, INFO_TEXT,
+    RIGHT_BUTTON_RECT,
 )
 from battleship.view.gui_elements.button import Button
 from battleship.view.gui_elements.text import Text

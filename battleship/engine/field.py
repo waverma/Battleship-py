@@ -2,11 +2,13 @@ import random
 from typing import Tuple
 
 from battleship.engine.game_constants import (
+    ATTEMPTS_PLACE_SHIP,
     DEFAULT_FIELD_SIZE,
     FOUR_DECK_COUNT,
+    SHOT_ATTEMPTS_COUNT,
     SINGLE_DECK_COUNT,
     THREE_DECK_COUNT,
-    TWO_DECK_COUNT, SHOT_ATTEMPTS_COUNT, ATTEMPTS_PLACE_SHIP,
+    TWO_DECK_COUNT,
 )
 from battleship.engine.ship import Ship
 from battleship.enums import Cell

@@ -13,8 +13,9 @@ from battleship.view.gui_elements.menus.pause_menu import PauseMenu
 from battleship.view.gui_elements.menus.post_game_element import (
     PostGameElement,
 )
-from battleship.view.gui_elements.menus.vk_authorization_menu import \
-    VkAuthorizationMenu
+from battleship.view.gui_elements.menus.vk_authorization_menu import (
+    VkAuthorizationMenu,
+)
 
 
 def render_per_element(buffer_to_render, new_buffer_to_draw, element):
@@ -95,7 +96,9 @@ class UserInterface:
 
         elif self.stage == InterfaceStage.VkAuthorization:
             render_per_element(
-                buffer_to_render, new_buffer_to_draw, self.vk_authorization_menu
+                buffer_to_render,
+                new_buffer_to_draw,
+                self.vk_authorization_menu
             )
 
         elif self.stage == InterfaceStage.PostGame:

@@ -1,6 +1,9 @@
+import os
 import re
 import webbrowser
+
 import vk
+from vk.exceptions import VkAPIError
 
 
 def get_user_id_and_access_token() -> list:
@@ -8,8 +11,18 @@ def get_user_id_and_access_token() -> list:
         return file.readline().split(";")
 
 
-APP_SECRET_KEY = "KAlJPYqbltkCatYOaVQS"
-SECRET_FILE = r"F:\MyProgProject\battleship\resources\secret"
+SECRET_FILE = os.path.join(
+    os.path.normpath(
+        os.path.dirname(os.path.abspath(__file__)) + os.sep + os.pardir
+    ),
+    "secret"
+)
+
+
+def check_secret_file():
+    if not os.path.exists(SECRET_FILE):
+        with open(SECRET_FILE, 'w') as file:
+            file.write("-1;-1;-1;-1")
 
 
 class VkProvider:
@@ -47,7 +60,7 @@ class VkProvider:
                 v="5.70",
                 access_token=self.access_token
             )
-        except Exception:
+        except VkAPIError:
             return False
         return True
 
@@ -61,6 +74,6 @@ class VkProvider:
     @staticmethod
     def save_user_id_and_access_token(user_id: str, token: str):
         key = get_user_id_and_access_token()[0]
-        id = get_user_id_and_access_token()[3]
+        app_id = get_user_id_and_access_token()[3]
         with open(SECRET_FILE, 'w') as file:
-            file.write(key + ";" + token + ";" + user_id + ";" + id)
+            file.write(key + ";" + token + ";" + user_id + ";" + app_id)

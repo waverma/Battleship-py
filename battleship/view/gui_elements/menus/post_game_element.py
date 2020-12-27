@@ -9,10 +9,11 @@ from battleship.view.draw_information import DrawInformation
 from battleship.view.graphic_utils import (
     CELL_SIZE,
     DEFAULT_DISPLAY_COLOR,
+    DEFAULT_TEXT_FILLCOLOR,
     GREEN_COLOR,
     LEFT_BUTTON_RECT,
     RED_COLOR,
-    RIGHT_BUTTON_RECT, DEFAULT_TEXT_FILLCOLOR,
+    RIGHT_BUTTON_RECT,
 )
 from battleship.view.gui_elements.button import Button
 from battleship.view.gui_elements.text import Text
@@ -88,7 +89,8 @@ class PostGameElement(UserElement):
             if buffer_to_render.posted:
                 self.vk_post_button.draw_info.fill_color = GREEN_COLOR
             else:
-                self.vk_post_button.draw_info.fill_color = DEFAULT_TEXT_FILLCOLOR
+                self.vk_post_button.draw_info.fill_color = \
+                    DEFAULT_TEXT_FILLCOLOR
 
         for button in self.buttons:
             button_info = button.get_render_info(

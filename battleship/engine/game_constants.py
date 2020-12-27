@@ -9,3 +9,9 @@ ATTEMPTS_PLACE_SHIP = 1000
 
 GAME_SESSION_LENGTH = 3600
 # GAME_SESSION_LENGTH = 36
+
+WIN_TEXT_FOR_VK_POST_PREFIX = "Ура!!! Я смог победить в игре battleship за "
+WIN_TEXT_FOR_VK_POST_SUFFIX = " секунд. Попробуй и ты: " \
+                              "https://github.com/waverma/battleship"
+LOSE_TEXT_FOR_VK_POST = "Я не смог одолеть этого бота, а ты сможешь? " \
+                        "Попробуй: https://github.com/waverma/battleship"
